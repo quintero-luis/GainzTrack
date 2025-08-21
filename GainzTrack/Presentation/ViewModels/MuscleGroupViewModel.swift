@@ -98,6 +98,7 @@ final class MuscleGroupViewModel: ObservableObject {
             await fetchAllMuscleGroups() // Refresh musclegroups after deleting
             
             // if -> used to DEselect deleted object, and select the first object from the list
+            // TODO: Check in testing if we need to add ?.id and .id
             if selectedMuscleGroup == muscleGroup {
                 selectedMuscleGroup = muscleGroups.first
             }

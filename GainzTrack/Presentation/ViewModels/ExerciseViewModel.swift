@@ -59,11 +59,13 @@ final class ExerciseViewModel: ObservableObject {
         status = .loading
         do {
             exercise = try await getExerciseUseCase.execute(by: id)
+            selectedExercise = exercise // Update selected exercise
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
         }
     }
+    
     // TODO: We need to put something inside ()?
     func addExercise(_ exercise: Exercise) async {
         guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
@@ -74,6 +76,8 @@ final class ExerciseViewModel: ObservableObject {
         do {
             try await addExerciseUseCase.execute(exercise, to: muscleGroup)
             await fetchAllExercises() // Refresh after adding exercise
+            // TODO: Check usability in UI test
+            selectedExercise = exercise // Make the newly added one selected
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
@@ -82,28 +86,41 @@ final class ExerciseViewModel: ObservableObject {
     
     func updateExercise(_ exercise: Exercise) async {
         guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
-            status = .error(error: "No muscle group selected adding Exercise")
+            status = .error(error: "No muscle group selected updating Exercise")
             return
         }
         status = .loading
         do {
             try await updateExerciseUseCase.execute(exercise: exercise) // Use selectedExercise?
             await fetchAllExercises()
+            selectedExercise = exercise
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
         }
     }
     
-    func  deleteExercise(_ exercise: Exercise) async {
+    func  deleteExercise(_ exercise: Exercise? = nil) async {
         guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
-            status = .error(error: "No muscle group selected adding Exercise")
+            status = .error(error: "No muscle group selected deleting Exercise")
             return
         }
+        // Use exercise if not nil; if exercise is nil, use selectedExercise
+        guard let exerciseToDelete = exercise ?? selectedExercise else {
+                status = .error(error: "No exercise selected to delete")
+                return
+            }
+        
         status = .loading
         do {
-            try await deleteExerciseUseCase.execute(exercise)
+            try await deleteExerciseUseCase.execute(exerciseToDelete)
             await fetchAllExercises()
+            
+            // if -> used to DEselect deleted object, and select the first object from the list
+            if selectedExercise?.id == exerciseToDelete.id {
+                selectedExercise = exercises.first
+            }
+            
         } catch {
             status = .error(error: error.localizedDescription)
         }
