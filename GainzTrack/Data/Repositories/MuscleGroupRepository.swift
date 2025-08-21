@@ -28,6 +28,14 @@ final class MuscleGroupRepository: MuscleGroupRepositoryProtocol {
         return day.muscleGroups
     }
     
+    func getMuscleGroup(by id: UUID) async throws -> MuscleGroup? {
+        let descriptor = FetchDescriptor<MuscleGroup>(
+            predicate: #Predicate { $0.id == id}
+        )
+        
+        return try context.fetch(descriptor).first
+    }
+    
     func addMuscleGroup(_ muscleGroup: MuscleGroup, to day: Day) async throws {
         day.muscleGroups.append(muscleGroup)
         try context.save()

@@ -9,6 +9,7 @@ import Foundation
 
 protocol MuscleGroupRepositoryProtocol {
     func getAllMuscleGroups(for day: Day) async throws -> [MuscleGroup]
+    func getMuscleGroup(by id: UUID) async throws -> MuscleGroup?
     func addMuscleGroup(_ muscleGroup: MuscleGroup, to day: Day) async throws
     func updateMuscleGroup(_ muscleGroup: MuscleGroup) async throws
     func deleteMuscleGroup(_ muscleGroup: MuscleGroup) async throws
