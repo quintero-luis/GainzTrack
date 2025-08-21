@@ -63,7 +63,7 @@ final class DayViewModel: ObservableObject {
         status = .loading
         do {
             try await addDayUseCase.execute(day)
-            days.append(day) // Refresh list
+            await fetchAllDays() // Refresh list
             selectedDay = day
             status = .loaded
         } catch {
@@ -75,7 +75,8 @@ final class DayViewModel: ObservableObject {
         status = .loading
         do {
             try await updateDayUseCase.execute(day)
-            days.append(day) // Refresh list
+            await fetchAllDays() // Refresh list
+            status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
         }
@@ -85,7 +86,7 @@ final class DayViewModel: ObservableObject {
         status = .loading
         do {
             try await deleteDayUseCase.execute(day)
-            days.append(day) // Refresh list
+            await fetchAllDays() // Refresh list
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)

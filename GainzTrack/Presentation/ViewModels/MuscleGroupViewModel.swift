@@ -12,9 +12,11 @@ final class MuscleGroupViewModel: ObservableObject {
     // MARK: Muscle Group VM Published properties
     @Published var muscleGroups: [MuscleGroup] = []
     @Published var muscleGroup: MuscleGroup?
+    @Published var selectedMuscleGroup: MuscleGroup?
+    
     @Published var status: Status = .none
     
-    @Published var selectedDay: Day?
+    private let daysVM: DayViewModel
     
     // MARK: Muscle Group VM Use Cases
     private let addMuscleGroupUseCase: AddMuscleGroupUseCase
@@ -28,21 +30,32 @@ final class MuscleGroupViewModel: ObservableObject {
          deleteMuscleGroupUseCase: DeleteMuscleGroupUseCase,
          getAllMuscleGroupsUseCase: GetAllMuscleGroupsUseCase,
          getMuscleGroupUseCase: GetMuscleGroupUseCase,
-         updateMuscleGroupUseCase: UpdateMuscleGroupUseCase
+         updateMuscleGroupUseCase: UpdateMuscleGroupUseCase,
+         daysVM: DayViewModel
     ) {
         self.addMuscleGroupUseCase = addMuscleGroupUseCase
         self.deleteMuscleGroupUseCase = deleteMuscleGroupUseCase
         self.getAllMuscleGroupsUseCase = getAllMuscleGroupsUseCase
         self.getMuscleGroupUseCase = getMuscleGroupUseCase
         self.updateMuscleGroupUseCase = updateMuscleGroupUseCase
+        self.daysVM = daysVM
     }
     
     // MARK: Muscle Group VM Methods
     func fetchAllMuscleGroups() async {
-        guard let day = selectedDay else { return } // TODO: See if it is better to change return
+        guard let day = daysVM.selectedDay else { return } // TODO: See if it is better to change return
         status = .loading
         do {
             muscleGroups = try await getAllMuscleGroupsUseCase.execute(for: day)
+            // TODO: Check when UI testing
+            /*
+             This automatically selects the first muscle in the list after loading the muscleGroups.
+
+             Purpose: If your UI has details or actions based on the selected muscle, there will always be a default value.
+
+             Without this, selectedMuscleGroup would be nil until the user taps a muscle.
+             */
+            selectedMuscleGroup = muscleGroups.first
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
@@ -60,31 +73,38 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     
     func addMuscleGroup(_ muscleGroup: MuscleGroup) async {
-        guard let day = selectedDay else { return }
+        guard let day = daysVM.selectedDay else { return }
         status = .loading
         do {
             try await addMuscleGroupUseCase.execute(muscleGroup, to: day)
-            await fetchAllMuscleGroups() // // Refresh musclegroups after adding
+            /*muscleGroups.append(muscleGroup)*/ // // Refresh musclegroups after adding
+            await fetchAllMuscleGroups() // Refresh musclegroups after adding
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
         }
     }
     
-    func deleteMuscleGroup(_ muscleGroup: MuscleGroup, for day: Day) async {
-        guard let day = selectedDay else { return }
+    func deleteMuscleGroup(_ muscleGroup: MuscleGroup) async {
+        guard let day = daysVM.selectedDay else { return }
         status = .loading
         do {
             try await deleteMuscleGroupUseCase.execute(muscleGroup)
             await fetchAllMuscleGroups() // Refresh musclegroups after deleting
+            
+            // if -> used to DEselect deleted object, and select the first object from the list
+            if selectedMuscleGroup == muscleGroup {
+                selectedMuscleGroup = muscleGroups.first
+            }
+            
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
         }
     }
     
-    func updateMuscleGroup(_ muscleGroup: MuscleGroup, for day: Day) async {
-        guard let day = selectedDay else { return }
+    func updateMuscleGroup(_ muscleGroup: MuscleGroup) async {
+        guard let day = daysVM.selectedDay else { return }
         status = .loading
         do {
             try await updateMuscleGroupUseCase.execute(muscleGroup: muscleGroup)
@@ -95,3 +115,5 @@ final class MuscleGroupViewModel: ObservableObject {
         }
     }
 }
+
+
