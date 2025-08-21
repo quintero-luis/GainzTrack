@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GetMuscleGroupUseCaseProtocol {
-    func execute(id: UUID) async throws -> MuscleGroup?
+    func execute(by id: UUID) async throws -> MuscleGroup?
 }
 
 final class GetMuscleGroupUseCase: GetMuscleGroupUseCaseProtocol {
@@ -16,7 +16,7 @@ final class GetMuscleGroupUseCase: GetMuscleGroupUseCaseProtocol {
     init(repository: MuscleGroupRepositoryProtocol) {
         self.repository = repository
     }
-    func execute(id: UUID) async throws -> MuscleGroup? {
+    func execute(by id: UUID) async throws -> MuscleGroup? {
         return try await repository.getMuscleGroup(by: id)
     }
 }
