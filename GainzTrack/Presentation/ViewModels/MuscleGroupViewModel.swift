@@ -87,19 +87,25 @@ final class MuscleGroupViewModel: ObservableObject {
         }
     }
     
-    func deleteMuscleGroup(_ muscleGroup: MuscleGroup) async {
+    func deleteMuscleGroup(_ muscleGroup: MuscleGroup? = nil) async {
         guard let day = daysVM.selectedDay else {
             status = .error(error: "No day selected deleting Muscle Group")
             return
         }
+        let targetMuscleGroup = muscleGroup ?? selectedMuscleGroup
+        guard let muscleGroupToDelete = targetMuscleGroup else {
+            status = .error(error: "No muscle group selected deleting Muscle Group")
+            return
+        }
+        
         status = .loading
         do {
-            try await deleteMuscleGroupUseCase.execute(muscleGroup)
+            try await deleteMuscleGroupUseCase.execute(muscleGroupToDelete)
             await fetchAllMuscleGroups() // Refresh musclegroups after deleting
             
             // if -> used to DEselect deleted object, and select the first object from the list
             // TODO: Check in testing if we need to add ?.id and .id
-            if selectedMuscleGroup == muscleGroup {
+            if selectedMuscleGroup?.id == muscleGroupToDelete.id {
                 selectedMuscleGroup = muscleGroups.first
             }
             
