@@ -98,14 +98,20 @@ final class DayViewModel: ObservableObject {
         guard !days.isEmpty, let current = selectedDay, /// Check that a day is currently selected
               /// Search the days list for the position of the currently selected day.
                 // Circular navigation.
-              let index = days.firstIndex(of: current) else { return } // TODO: Improve else
+                let index = days.firstIndex(of: current) else {
+            status = .error(error: "day is Not empty or No day currently selected trying to select next day")
+            return
+        } // TODO: Improve else?
         let nextIndex = (index + 1) % days.count /// Monday=0, Tuesday=1, Wednesday=2 ( Currentrly at Tuesday)
         selectedDay = days[nextIndex]            /// (1+1)%3 = 2 ->  wednesday  next -> (2+1)%3 = 0 -> Monday
     }
     
     func selectPreviousDay() {
         guard !days.isEmpty, let current = selectedDay, // Check that a day is currently selected
-        let index = days.firstIndex(of: current) else { return }
+              let index = days.firstIndex(of: current) else {
+            status = .error(error: "day is Not empty or No day currently selected trying to select previous day")
+            return
+        }
         let prevIndex = (index - 1 + days.count) % days.count
         selectedDay = days[prevIndex]
     }

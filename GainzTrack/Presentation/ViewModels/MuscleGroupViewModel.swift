@@ -73,7 +73,9 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     
     func addMuscleGroup(_ muscleGroup: MuscleGroup) async {
-        guard let day = daysVM.selectedDay else { return }
+        guard let day = daysVM.selectedDay else {
+            status = .error(error: "No day selected adding MuscleGroup")
+            return }
         status = .loading
         do {
             try await addMuscleGroupUseCase.execute(muscleGroup, to: day)
@@ -86,7 +88,10 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     
     func deleteMuscleGroup(_ muscleGroup: MuscleGroup) async {
-        guard let day = daysVM.selectedDay else { return }
+        guard let day = daysVM.selectedDay else {
+            status = .error(error: "No day selected deleting Muscle Group")
+            return
+        }
         status = .loading
         do {
             try await deleteMuscleGroupUseCase.execute(muscleGroup)
@@ -104,7 +109,10 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     
     func updateMuscleGroup(_ muscleGroup: MuscleGroup) async {
-        guard let day = daysVM.selectedDay else { return }
+        guard let day = daysVM.selectedDay else {
+            status = .error(error: "No day selected updating Muscle Group")
+            return
+        }
         status = .loading
         do {
             try await updateMuscleGroupUseCase.execute(muscleGroup: muscleGroup)

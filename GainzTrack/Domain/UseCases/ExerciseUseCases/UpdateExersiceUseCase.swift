@@ -11,7 +11,7 @@ protocol UpdateExerciseUseCaseProtocol {
     func execute(exercise: Exercise) async throws
 }
 
-final class UpdateExersiceUseCase: UpdateExerciseUseCaseProtocol {
+final class UpdateExerciseUseCase: UpdateExerciseUseCaseProtocol {
     private let repository: ExerciseRepositoryProtocol
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository

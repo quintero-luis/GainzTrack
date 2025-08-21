@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Exercise {
+final class Exercise: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var name: String
     var reps: Int
