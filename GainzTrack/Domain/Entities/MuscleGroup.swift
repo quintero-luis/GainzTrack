@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class MuscleGroup {
+final class MuscleGroup: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var name: String
     @Relationship(deleteRule: .cascade) var exercises: [Exercise] = []

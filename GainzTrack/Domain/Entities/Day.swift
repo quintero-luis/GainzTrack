@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Day {
+final class Day: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var date: Date
     @Relationship(deleteRule: .cascade) var muscleGroups: [MuscleGroup] = []
