@@ -12,10 +12,12 @@ import SwiftData
 final class MuscleGroup: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var name: String
-    @Relationship(deleteRule: .cascade) var exercises: [Exercise] = []
     
-    init(name: String, exercises: [Exercise]) {
-        self.name = name
-        self.exercises = exercises
-    }
+    // Every MuscleGroup can have many Exercises
+    @Relationship(deleteRule: .cascade)
+    var exercises: [Exercise] = []
+    
+    init(name: String) {
+            self.name = name
+        }
 }

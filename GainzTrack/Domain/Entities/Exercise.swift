@@ -8,16 +8,22 @@
 import Foundation
 import SwiftData
 
+// Exercise type (Bench Press, Bicep Curl, Hack Squat, etc)
 @Model
 final class Exercise: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var name: String
-    var reps: Int
-    var weight: Double
     
-    init(name: String, reps: Int, weight: Double) {
+    // Inverse relationship (To which MuscleGroup does every Exercise Belongs to)
+    // Each Exercise belongs to a MuscleGroup
+    @Relationship(deleteRule: .nullify)
+    var muscleGroup: MuscleGroup?
+    
+    // Relationship with ExerciseEntry (Exercise made in a day)
+    @Relationship(deleteRule: .cascade)
+    var entries: [ExerciseEntry] = []
+    
+    init(name: String) {
         self.name = name
-        self.reps = reps
-        self.weight = weight
     }
 }

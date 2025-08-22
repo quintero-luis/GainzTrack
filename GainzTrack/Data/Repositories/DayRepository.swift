@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 final class DayRepository: DayRepositoryProtocol {
     private let context: ModelContext
     

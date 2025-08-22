@@ -11,7 +11,7 @@ protocol AddExerciseUseCaseProtocol {
     func execute(_ exercise: Exercise, to muscleGroup: MuscleGroup) async throws
 }
 
-final class AddExersiceUseCase: AddExerciseUseCaseProtocol {
+final class AddExerciseUseCase: AddExerciseUseCaseProtocol {
     private let repository: ExerciseRepositoryProtocol
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository

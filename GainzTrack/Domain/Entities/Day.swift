@@ -8,14 +8,17 @@
 import Foundation
 import SwiftData
 
+// Day in the calendar
 @Model
 final class Day: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var date: Date
-    @Relationship(deleteRule: .cascade) var muscleGroups: [MuscleGroup] = []
     
-    init(date: Date, muscleGroups: [MuscleGroup]) {
+    // Each Day can have many ExerciseEntry
+    @Relationship(deleteRule: .cascade)
+    var exercises: [ExerciseEntry] = []
+    
+    init(date: Date) {
         self.date = date
-        self.muscleGroups = muscleGroups
     }
 }
