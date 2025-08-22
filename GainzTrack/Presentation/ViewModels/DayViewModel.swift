@@ -15,32 +15,18 @@ final class DayViewModel: ObservableObject {
     @Published var status: Status = .none
     
     // MARK: UseCases for DayVM
-    private let getAllDaysUseCase: GetAllDaysUseCase
-    private let getDayByDateUseCase: GetDayByDateUseCase
-    private let addDayUseCase: AddDayUseCase
-    private let updateDayUseCase: UpdateDayUseCase
-    private let deleteDayUseCase: DeleteDayUseCase
+    private let dayUseCases: DayUseCasesProtocol
 
     // MARK: - Init
-        init(
-            getAllDaysUseCase: GetAllDaysUseCase,
-            getDayByDateUseCase: GetDayByDateUseCase,
-            addDayUseCase: AddDayUseCase,
-            updateDayUseCase: UpdateDayUseCase,
-            deleteDayUseCase: DeleteDayUseCase
-        ) {
-            self.getAllDaysUseCase = getAllDaysUseCase
-            self.getDayByDateUseCase = getDayByDateUseCase
-            self.addDayUseCase = addDayUseCase
-            self.updateDayUseCase = updateDayUseCase
-            self.deleteDayUseCase = deleteDayUseCase
-        }
+    init(dayUseCases: DayUseCasesProtocol) {
+        self.dayUseCases = dayUseCases
+    }
     
     // MARK: Methods
     func fetchAllDays() async {
         status = .loading
         do {
-            let result = try await getAllDaysUseCase.execute()
+            let result = try await dayUseCases.fetchAllDays()
             days = result
             selectedDay = result.first
             status = .loaded
@@ -52,7 +38,7 @@ final class DayViewModel: ObservableObject {
     func fetchDay(by date: Date) async {
         status = .loading
         do {
-            selectedDay = try await getDayByDateUseCase.execute(date: date)
+            selectedDay = try await dayUseCases.fetchDay(by: date)
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
@@ -62,7 +48,7 @@ final class DayViewModel: ObservableObject {
     func addDay(_ day: Day) async {
         status = .loading
         do {
-            try await addDayUseCase.execute(day)
+            try await dayUseCases.createDay(day)
             await fetchAllDays() // Refresh list
             selectedDay = day
             status = .loaded
@@ -74,7 +60,7 @@ final class DayViewModel: ObservableObject {
     func updateDay(_ day: Day) async {
         status = .loading
         do {
-            try await updateDayUseCase.execute(day)
+            try await dayUseCases.updateDay(day)
             await fetchAllDays() // Refresh list
             status = .loaded
         } catch {
@@ -85,7 +71,7 @@ final class DayViewModel: ObservableObject {
     func deleteDay(_ day: Day) async {
         status = .loading
         do {
-            try await deleteDayUseCase.execute(day)
+            try await dayUseCases.deleteDay(day)
             await fetchAllDays() // Refresh list
             status = .loaded
         } catch {
