@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftData
 
 @MainActor
 final class ExerciseViewModel: ObservableObject {
@@ -18,6 +18,8 @@ final class ExerciseViewModel: ObservableObject {
     @Published var status: Status = .none
     
     private let muscleGroupVM: MuscleGroupViewModel
+    
+    var context: ModelContext? = nil
     
     // MARK: Exercise VM Use Cases
     private let addExerciseUseCase: AddExersiceUseCase
@@ -42,8 +44,16 @@ final class ExerciseViewModel: ObservableObject {
         self.updateExerciseUseCase = updateExerciseUseCase
     }
     
+    func setContext(_ context: ModelContext) {
+            self.context = context
+        }
+    
     // MARK: Exercise VM Methods
     func fetchAllExercises() async {
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else { return }
         status = .loading
         do {
@@ -56,6 +66,10 @@ final class ExerciseViewModel: ObservableObject {
     }
     
     func fetchExercise(by id: UUID) async {
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             exercise = try await getExerciseUseCase.execute(by: id)
@@ -68,6 +82,10 @@ final class ExerciseViewModel: ObservableObject {
     
     // TODO: We need to put something inside ()?
     func addExercise(_ exercise: Exercise) async {
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
             status = .error(error: "No muscle group selected adding Exercise")
             return
@@ -85,10 +103,14 @@ final class ExerciseViewModel: ObservableObject {
     }
     
     func updateExercise(_ exercise: Exercise) async {
-        guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
-            status = .error(error: "No muscle group selected updating Exercise")
-            return
-        }
+//        guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
+//            status = .error(error: "No muscle group selected updating Exercise")
+//            return
+//        }
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             try await updateExerciseUseCase.execute(exercise: exercise) // Use selectedExercise?
@@ -101,10 +123,14 @@ final class ExerciseViewModel: ObservableObject {
     }
     
     func  deleteExercise(_ exercise: Exercise? = nil) async {
-        guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
-            status = .error(error: "No muscle group selected deleting Exercise")
-            return
-        }
+//        guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
+//            status = .error(error: "No muscle group selected deleting Exercise")
+//            return
+//        }
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         // Use exercise if not nil; if exercise is nil, use selectedExercise
         guard let exerciseToDelete = exercise ?? selectedExercise else {
                 status = .error(error: "No exercise selected to delete")

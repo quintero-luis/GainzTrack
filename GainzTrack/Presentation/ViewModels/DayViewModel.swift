@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 @MainActor
 final class DayViewModel: ObservableObject {
@@ -14,42 +15,62 @@ final class DayViewModel: ObservableObject {
     @Published var selectedDay: Day? // Important for horizontal navigation between days
     @Published var status: Status = .none
     
+    // MARK: ModelContext
+        var context: ModelContext? = nil
+    
     // MARK: UseCases for DayVM
     private let getAllDaysUseCase: GetAllDaysUseCase
     private let getDayByDateUseCase: GetDayByDateUseCase
     private let addDayUseCase: AddDayUseCase
     private let updateDayUseCase: UpdateDayUseCase
     private let deleteDayUseCase: DeleteDayUseCase
-
+    
     // MARK: - Init
-        init(
-            getAllDaysUseCase: GetAllDaysUseCase,
-            getDayByDateUseCase: GetDayByDateUseCase,
-            addDayUseCase: AddDayUseCase,
-            updateDayUseCase: UpdateDayUseCase,
-            deleteDayUseCase: DeleteDayUseCase
-        ) {
-            self.getAllDaysUseCase = getAllDaysUseCase
-            self.getDayByDateUseCase = getDayByDateUseCase
-            self.addDayUseCase = addDayUseCase
-            self.updateDayUseCase = updateDayUseCase
-            self.deleteDayUseCase = deleteDayUseCase
+    init(
+        getAllDaysUseCase: GetAllDaysUseCase,
+        getDayByDateUseCase: GetDayByDateUseCase,
+        addDayUseCase: AddDayUseCase,
+        updateDayUseCase: UpdateDayUseCase,
+        deleteDayUseCase: DeleteDayUseCase
+    ) {
+        self.getAllDaysUseCase = getAllDaysUseCase
+        self.getDayByDateUseCase = getDayByDateUseCase
+        self.addDayUseCase = addDayUseCase
+        self.updateDayUseCase = updateDayUseCase
+        self.deleteDayUseCase = deleteDayUseCase
+    }
+    
+    // MARK: Set ModelContext
+        func setContext(_ context: ModelContext) {
+            self.context = context
         }
     
     // MARK: Methods
     func fetchAllDays() async {
-        status = .loading
+        guard context != nil else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
+        await MainActor.run { self.status = .loading }
         do {
             let result = try await getAllDaysUseCase.execute()
-            days = result
-            selectedDay = result.first
-            status = .loaded
+            await MainActor.run {
+                self.days = result
+                self.selectedDay = result.first
+                self.status = .loaded
+            }
         } catch {
-            status = .error(error: error.localizedDescription)
+            await MainActor.run {
+                        self.status = .error(error: error.localizedDescription)
+                    }
         }
     }
     
     func fetchDay(by date: Date) async {
+        guard context != nil else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             selectedDay = try await getDayByDateUseCase.execute(date: date)
@@ -60,6 +81,10 @@ final class DayViewModel: ObservableObject {
     }
     
     func addDay(_ day: Day) async {
+        guard context != nil else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             try await addDayUseCase.execute(day)
@@ -72,6 +97,10 @@ final class DayViewModel: ObservableObject {
     }
     
     func updateDay(_ day: Day) async {
+        guard context != nil else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             try await updateDayUseCase.execute(day)
@@ -83,6 +112,10 @@ final class DayViewModel: ObservableObject {
     }
     
     func deleteDay(_ day: Day) async {
+        guard context != nil else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             try await deleteDayUseCase.execute(day)

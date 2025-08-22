@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 @MainActor
 final class MuscleGroupViewModel: ObservableObject {
@@ -15,6 +16,8 @@ final class MuscleGroupViewModel: ObservableObject {
     @Published var selectedMuscleGroup: MuscleGroup?
     
     @Published var status: Status = .none
+    
+    var context: ModelContext? = nil
     
     private let daysVM: DayViewModel
     
@@ -41,8 +44,17 @@ final class MuscleGroupViewModel: ObservableObject {
         self.daysVM = daysVM
     }
     
+    func setContext(_ context: ModelContext) {
+            self.context = context
+        }
+    
     // MARK: Muscle Group VM Methods
     func fetchAllMuscleGroups() async {
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
+        
         guard let day = daysVM.selectedDay else { return } // TODO: See if it is better to change return
         status = .loading
         do {
@@ -63,6 +75,10 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     // TODO: See if we need to add for day: Day
     func fetchMuscleGroup(by id: UUID) async {
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             muscleGroup = try await getMuscleGroupUseCase.execute(by: id)
@@ -88,10 +104,15 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     
     func deleteMuscleGroup(_ muscleGroup: MuscleGroup? = nil) async {
-        guard let day = daysVM.selectedDay else {
-            status = .error(error: "No day selected deleting Muscle Group")
-            return
-        }
+//        guard let day = daysVM.selectedDay else {
+//            status = .error(error: "No day selected deleting Muscle Group")
+//            return
+//        }
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
+        
         let targetMuscleGroup = muscleGroup ?? selectedMuscleGroup
         guard let muscleGroupToDelete = targetMuscleGroup else {
             status = .error(error: "No muscle group selected deleting Muscle Group")
@@ -116,10 +137,14 @@ final class MuscleGroupViewModel: ObservableObject {
     }
     
     func updateMuscleGroup(_ muscleGroup: MuscleGroup) async {
-        guard let day = daysVM.selectedDay else {
-            status = .error(error: "No day selected updating Muscle Group")
-            return
-        }
+//        guard let day = daysVM.selectedDay else {
+//            status = .error(error: "No day selected updating Muscle Group")
+//            return
+//        }
+        guard let _ = context else {
+                    status = .error(error: "ModelContext not set")
+                    return
+                }
         status = .loading
         do {
             try await updateMuscleGroupUseCase.execute(muscleGroup: muscleGroup)
