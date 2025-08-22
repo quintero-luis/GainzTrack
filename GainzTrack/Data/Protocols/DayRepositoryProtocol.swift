@@ -14,4 +14,7 @@ protocol DayRepositoryProtocol {
     func addDay(_ day: Day) async throws
     func updateDay(_ day: Day) async throws
     func deleteDay(_ day: Day) async throws
+    
+    // Ensures there is a Day for today. Returns it.
+    func getOrCreateToday() async throws -> Day
 }

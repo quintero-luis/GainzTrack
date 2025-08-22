@@ -14,18 +14,12 @@ final class MuscleGroupRepository: MuscleGroupRepositoryProtocol {
     init(context: ModelContext) {
         self.context = context
     }
-    // TODO:
-    /*
-     func getAllMuscleGroups(for day: Day) async throws -> [MuscleGroup] {
-         let descriptor = FetchDescriptor<MuscleGroup>(
-             predicate: #Predicate { $0.day == day } // si agregas la relación inversa day en MuscleGroup
-         )
-         return try context.fetch(descriptor)
-     }
-     */
     
-    func getAllMuscleGroups(for day: Day) async throws -> [MuscleGroup] {
-        return day.muscleGroups
+    func getAllMuscleGroups() async throws -> [MuscleGroup] {
+        let descriptor = FetchDescriptor<MuscleGroup>(
+            sortBy: [SortDescriptor(\.name)] // Sort alphabetically
+        )
+        return try context.fetch(descriptor)
     }
     
     func getMuscleGroup(by id: UUID) async throws -> MuscleGroup? {
@@ -36,8 +30,8 @@ final class MuscleGroupRepository: MuscleGroupRepositoryProtocol {
         return try context.fetch(descriptor).first
     }
     
-    func addMuscleGroup(_ muscleGroup: MuscleGroup, to day: Day) async throws {
-        day.muscleGroups.append(muscleGroup)
+    func addMuscleGroup(_ muscleGroup: MuscleGroup) async throws {
+        context.insert(muscleGroup)
         try context.save()
     }
     
