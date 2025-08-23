@@ -14,40 +14,29 @@ final class ExerciseViewModel: ObservableObject {
     @Published var exercises: [Exercise] = []
     @Published var exercise: Exercise?
     @Published var selectedExercise: Exercise?
-    
     @Published var status: Status = .none
     
+    // Dependency: MuscleGroup selection
     private let muscleGroupVM: MuscleGroupViewModel
     
     // MARK: Exercise VM Use Cases
-    private let addExerciseUseCase: AddExersiceUseCase
-    private let deleteExerciseUseCase: DeleteExerciseUseCase
-    private let getAllExercisesUseCase: GetAllExercisesUseCase
-    private let getExerciseUseCase: GetExerciseUseCase
-    private let updateExerciseUseCase: UpdateExerciseUseCase
+    private let exerciseUseCases: ExerciseUseCasesProtocol
     
     // MARK: Exercise VM Init
-    init(muscleGroupVM: MuscleGroupViewModel,
-         addExerciseUseCase: AddExersiceUseCase,
-         deleteExerciseUseCase: DeleteExerciseUseCase,
-         getAllExercisesUseCase: GetAllExercisesUseCase,
-         getExerciseUseCase: GetExerciseUseCase,
-         updateExerciseUseCase: UpdateExerciseUseCase
-    ) {
-        self.muscleGroupVM = muscleGroupVM
-        self.addExerciseUseCase = addExerciseUseCase
-        self.deleteExerciseUseCase = deleteExerciseUseCase
-        self.getAllExercisesUseCase = getAllExercisesUseCase
-        self.getExerciseUseCase = getExerciseUseCase
-        self.updateExerciseUseCase = updateExerciseUseCase
-    }
+    init(
+            muscleGroupVM: MuscleGroupViewModel,
+            exerciseUseCases: ExerciseUseCasesProtocol
+        ) {
+            self.muscleGroupVM = muscleGroupVM
+            self.exerciseUseCases = exerciseUseCases
+        }
     
     // MARK: Exercise VM Methods
     func fetchAllExercises() async {
         guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else { return }
         status = .loading
         do {
-            exercises = try await getAllExercisesUseCase.execute(for: muscleGroup)
+            exercises = try await exerciseUseCases.fetchAllExercises(for: muscleGroup)
             selectedExercise = exercises.first
             status = .loaded
         } catch {
@@ -58,7 +47,7 @@ final class ExerciseViewModel: ObservableObject {
     func fetchExercise(by id: UUID) async {
         status = .loading
         do {
-            exercise = try await getExerciseUseCase.execute(by: id)
+            exercise = try await exerciseUseCases.fetchExercise(by: id)
             selectedExercise = exercise // Update selected exercise
             status = .loaded
         } catch {
@@ -74,7 +63,7 @@ final class ExerciseViewModel: ObservableObject {
         }
         status = .loading
         do {
-            try await addExerciseUseCase.execute(exercise, to: muscleGroup)
+            try await exerciseUseCases.createExercise(exercise, to: muscleGroup)
             await fetchAllExercises() // Refresh after adding exercise
             // TODO: Check usability in UI test
             selectedExercise = exercise // Make the newly added one selected
@@ -91,7 +80,7 @@ final class ExerciseViewModel: ObservableObject {
         }
         status = .loading
         do {
-            try await updateExerciseUseCase.execute(exercise: exercise) // Use selectedExercise?
+            try await exerciseUseCases.updateExercise(exercise) // Use selectedExercise?
             await fetchAllExercises()
             selectedExercise = exercise
             status = .loaded
@@ -101,10 +90,6 @@ final class ExerciseViewModel: ObservableObject {
     }
     
     func  deleteExercise(_ exercise: Exercise? = nil) async {
-        guard let muscleGroup = muscleGroupVM.selectedMuscleGroup else {
-            status = .error(error: "No muscle group selected deleting Exercise")
-            return
-        }
         // Use exercise if not nil; if exercise is nil, use selectedExercise
         guard let exerciseToDelete = exercise ?? selectedExercise else {
                 status = .error(error: "No exercise selected to delete")
@@ -113,7 +98,7 @@ final class ExerciseViewModel: ObservableObject {
         
         status = .loading
         do {
-            try await deleteExerciseUseCase.execute(exerciseToDelete)
+            try await exerciseUseCases.deleteExercise(exerciseToDelete)
             await fetchAllExercises()
             
             // if -> used to DEselect deleted object, and select the first object from the list
