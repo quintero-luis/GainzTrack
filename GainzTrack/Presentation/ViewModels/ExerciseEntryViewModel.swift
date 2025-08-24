@@ -6,7 +6,8 @@
 //
 
 import Foundation
-
+ // TODO: See if weak needed
+@MainActor
 final class ExerciseEntryViewModel: ObservableObject {
     // MARK: Published properties
     @Published var entries: [ExerciseEntry] = []
@@ -28,7 +29,7 @@ final class ExerciseEntryViewModel: ObservableObject {
     
     // MARK: Methods
     func fetchAllEntries() async {
-        guard let day = await dayVM.selectedDay else {
+        guard let day = dayVM.selectedDay else {
             status = .error(error: "Error with day fetching all Exercise Entries")
             return
         }
@@ -54,7 +55,7 @@ final class ExerciseEntryViewModel: ObservableObject {
     }
     
     func addEntry(_ entry: ExerciseEntry) async {
-        guard let day = await dayVM.selectedDay else {
+        guard let day = dayVM.selectedDay else {
             status = .error(error: "Error with day fetching adding an Exercise Entry")
             return
         }
