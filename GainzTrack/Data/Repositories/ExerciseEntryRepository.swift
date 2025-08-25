@@ -10,7 +10,6 @@ import SwiftData
 
 final class ExerciseEntryRepository: ExerciseEntryRepositoryProtocol {
     private let context: ModelContext
-    
     init(context: ModelContext) {
         self.context = context
     }
