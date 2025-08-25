@@ -15,10 +15,12 @@ final class Day: Sendable {
     var date: Date
     
     // Each Day can have many ExerciseEntry
-    @Relationship(deleteRule: .cascade)
-    var exercises: [ExerciseEntry] = []
+    @Relationship
+    var entries: [ExerciseEntry]
     
-    init(date: Date) {
-        self.date = date
-    }
+    init(id: UUID = UUID(), date: Date, entries: [ExerciseEntry] = []) {
+            self.id = id
+            self.date = date
+            self.entries = entries
+        }
 }

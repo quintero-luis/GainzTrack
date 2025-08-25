@@ -16,8 +16,9 @@ final class ExerciseSetRepository: ExerciseSetRepositoryProtocol {
     }
 
     func getAllSets(for entry: ExerciseEntry) async throws -> [ExerciseSet] {
+        let entryID = entry.persistentModelID
         let descriptor = FetchDescriptor<ExerciseSet>(
-            predicate: #Predicate { $0.entry == entry }
+            predicate: #Predicate { $0.entry?.persistentModelID == entryID}
         )
         return try context.fetch(descriptor)
     }

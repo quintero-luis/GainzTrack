@@ -14,10 +14,11 @@ final class ExerciseEntryRepository: ExerciseEntryRepositoryProtocol {
     init(context: ModelContext) {
         self.context = context
     }
-
+    // Get all Exercise entries by date
     func getAllEntries(for day: Day) async throws -> [ExerciseEntry] {
+        let dayID = day.persistentModelID
         let descriptor = FetchDescriptor<ExerciseEntry>(
-            predicate: #Predicate { $0.day == day }
+            predicate: #Predicate { $0.day.persistentModelID == dayID }
         )
         return try context.fetch(descriptor)
     }

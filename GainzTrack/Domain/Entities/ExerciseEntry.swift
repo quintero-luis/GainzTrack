@@ -12,10 +12,9 @@ import SwiftData
 @Model
 final class ExerciseEntry: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
-    
     // Every ExerciseEntry belongs to a day
-    @Relationship(deleteRule: .nullify, inverse: \Day.exercises)
-    var day: Day?
+    @Relationship(deleteRule: .nullify, inverse: \Day.entries)
+    var day: Day
     
     // Every ExerciseEntry belongs to an Exercise
     @Relationship(deleteRule: .nullify, inverse: \Exercise.entries)
@@ -23,10 +22,17 @@ final class ExerciseEntry: Sendable {
     
     // Every ExerciseEntry can have many ExerciseSets
     @Relationship(deleteRule: .cascade)
-    var sets: [ExerciseSet] = []
+    var sets: [ExerciseSet]
     
-    init(day: Day? = nil, exercise: Exercise? = nil) {
+    init(
+        id: UUID = UUID(),
+        day: Day,
+        exercise: Exercise? = nil,
+        sets: [ExerciseSet] = []
+    ) {
+        self.id = id
         self.day = day
         self.exercise = exercise
+        self.sets = sets
     }
 }

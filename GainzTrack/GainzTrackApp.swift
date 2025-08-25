@@ -6,12 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct GainzTrackApp: App {
+    
+    let container: ModelContainer
+
+        init() {
+            container = try! ModelContainer(
+                for: Day.self, Exercise.self, ExerciseEntry.self, ExerciseSet.self, MuscleGroup.self
+            )
+        }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TodayView()
+                .modelContainer(container)
         }
     }
 }

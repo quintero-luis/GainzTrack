@@ -16,10 +16,12 @@ final class ExerciseRepository: ExerciseRepositoryProtocol {
     }
     // Fetch all exercises for a given MuscleGroup using context
     func getAllExercises(for muscleGroup: MuscleGroup) async throws -> [Exercise] {
-        let descriptor = FetchDescriptor<Exercise>(
-            predicate: #Predicate { $0.muscleGroup == muscleGroup}
-        )
-        return try context.fetch(descriptor)
+//        let descriptor = FetchDescriptor<Exercise>(
+//            predicate: #Predicate { $0.muscleGroup?.id == muscleGroup.id }
+//        )
+//        return try context.fetch(descriptor)
+        let allExercises = try context.fetch(FetchDescriptor<Exercise>())
+            return allExercises.filter { $0.muscleGroup?.id == muscleGroup.id }
     }
     
     // Fetch by unique ID
