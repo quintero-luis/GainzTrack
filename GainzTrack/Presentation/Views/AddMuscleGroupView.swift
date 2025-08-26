@@ -40,14 +40,16 @@ struct AddMuscleGroupView: View {
                 } // 1 Add Exercise Section
                 Section("Select Muscle Group") {
                     HStack {
-                        Picker("Select a MuscleGroup or create one", selection: $selectedMuscleGroup) {
-                            Text("Select a Muscle Group").tag(MuscleGroup?.none) // Tag the placeholder option as nil
+                        Picker(selection: $selectedMuscleGroup) {
+                            Text("None").tag(MuscleGroup?.none) // Tag the placeholder option as nil
                             
                             ForEach(muscleGroupVM.muscleGroups, id: \.id) { mg in
                                 Text(mg.name).tag(Optional(mg)) // Tag the picker option with the muscle group
                             }
+                        } label: {
+                            Text(selectedMuscleGroup?.name ?? "")
                         }// Picker
-                        .pickerStyle(.menu)
+                        .pickerStyle(.automatic)
                         
                         Spacer()
                         
@@ -73,6 +75,12 @@ struct AddMuscleGroupView: View {
                                     
                                 }
                             }
+                            .disabled(newMuscleGroupName.isEmpty)
+                            
+                            Button("Cancel", role: .cancel) {
+                                newMuscleGroupName = ""
+                            }
+                            
                         })
                     } // HStack
                 } // 2 Muscle Group Section and addition
