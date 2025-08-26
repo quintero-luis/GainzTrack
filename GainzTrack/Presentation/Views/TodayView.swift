@@ -9,51 +9,70 @@ import SwiftUI
 import SwiftData
 
 struct TodayView: View {
-    @Environment(\.modelContext) private var context
-    
-    @Query(sort: \Day.date) private var days: [Day] // Todos los días
+    @ObservedObject var dayVM: DayViewModel
+    @ObservedObject var entryVM: ExerciseEntryViewModel
+    @ObservedObject var muscleGroupVM: MuscleGroupViewModel
     
     private var today: Day? {
-        let todayStart = Calendar.current.startOfDay(for: Date())
-        let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
-        return days.first(where: { $0.date >= todayStart && $0.date < todayEnd })
+        dayVM.selectedDay
     }
     
     var body: some View {
-        VStack {
-            Text("Today")
-                .font(.largeTitle)
-                .bold()
-            
-
-            
-            if let today = today {
-                if today.entries.isEmpty {
-                    Text("No exercises yet")
-                        .foregroundColor(.gray)
-                } else {
-                    List {
-                        ForEach(today.entries) { entry in
-                            if let exercise = entry.exercise {
-                                Section(header: Text(exercise.name)) {
-                                    ForEach(entry.sets) { set in
-                                        Text("\(Int(set.weight)) kg x \(set.reps) reps")
+        NavigationStack {
+            VStack {
+                HStack {
+                    Text("Today")
+                        .font(.largeTitle)
+                        .bold()
+                    
+                    NavigationLink {
+                        MuscleGroupPickerView(
+                            muscleGroupVM: muscleGroupVM,
+                            entryVM: entryVM
+                        )
+                    }
+                    label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 20))
+                            .padding()
+                            .foregroundColor(.black)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 4, x: 0, y: 2)
+                    }
+                    .padding()
+                    
+                }
+                
+                if let today = today {
+                    if entryVM.entries.isEmpty {
+                        Text("No exercises yet")
+                            .foregroundColor(.gray)
+                    } else {
+                        List {
+                            ForEach(entryVM.entries, id: \.id) { entry in
+                                if let exercise = entry.exercise {
+                                    Section(header: Text(exercise.name)) {
+                                        ForEach(entry.sets, id: \.id) { set in
+                                            Text("\(Int(set.weight)) kg x \(set.reps) reps")
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                } else {
+                    Text("No day created for today")
+                        .foregroundColor(.gray)
                 }
-            } else {
-                Text("No day created for today")
-                    .foregroundColor(.gray)
+            }
+            .padding()
+            .task {
+                // Cargar día de hoy y sus entradas
+                await dayVM.fetchDay(by: Date())
+                await entryVM.fetchAllEntries()
             }
         }
-        .padding()
-    }
+    } // View
 }
 
-#Preview {
-    TodayView()
-        .modelContainer(mockTodayContainer())
-}

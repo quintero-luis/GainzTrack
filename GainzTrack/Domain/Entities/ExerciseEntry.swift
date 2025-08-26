@@ -13,7 +13,7 @@ import SwiftData
 final class ExerciseEntry: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     // Every ExerciseEntry belongs to a day
-    @Relationship(deleteRule: .nullify, inverse: \Day.entries)
+    @Relationship(deleteRule: .cascade, inverse: \Day.entries)
     var day: Day
     
     // Every ExerciseEntry belongs to an Exercise

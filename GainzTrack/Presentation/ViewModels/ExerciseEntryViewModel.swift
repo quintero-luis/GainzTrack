@@ -16,7 +16,7 @@ final class ExerciseEntryViewModel: ObservableObject {
     @Published var status: Status = .none
     
     // Dependency: Day Selection
-    private let dayVM: DayViewModel
+    let dayVM: DayViewModel
     
     // Exercise Entry Use Case
     private let entryUseCases: ExerciseEntryUseCasesProtocol
