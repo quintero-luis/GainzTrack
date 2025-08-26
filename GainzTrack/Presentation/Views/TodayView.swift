@@ -12,6 +12,7 @@ struct TodayView: View {
     @ObservedObject var dayVM: DayViewModel
     @ObservedObject var entryVM: ExerciseEntryViewModel
     @ObservedObject var muscleGroupVM: MuscleGroupViewModel
+    @ObservedObject var exerciseVM: ExerciseViewModel
     
     private var today: Day? {
         dayVM.selectedDay
@@ -25,9 +26,10 @@ struct TodayView: View {
                         .font(.largeTitle)
                         .bold()
                     
-                    NavigationLink {
+                    NavigationLink { // Go to Muscle Group List View
                         MuscleGroupPickerView(
                             muscleGroupVM: muscleGroupVM,
+                            exerciseVM: exerciseVM,
                             entryVM: entryVM
                         )
                     }
@@ -72,7 +74,7 @@ struct TodayView: View {
                 await dayVM.fetchDay(by: Date())
                 await entryVM.fetchAllEntries()
             }
-        }
+        } // Navigation Stack
     } // View
 }
 
