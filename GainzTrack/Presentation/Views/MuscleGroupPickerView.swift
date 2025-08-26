@@ -12,29 +12,31 @@ struct MuscleGroupPickerView: View {
     @ObservedObject var exerciseVM: ExerciseViewModel
     @ObservedObject var entryVM: ExerciseEntryViewModel
 
-    // Selección de exercise en la UI
     @State private var selectedExercise: Exercise?
 
     var body: some View {
         NavigationStack {
             VStack {
-                // MuscleGroup List
+                // MuscleGroup List after home
                 List(muscleGroupVM.muscleGroups, id: \.id) { mg in
-                    Button(mg.name) {
-                        muscleGroupVM.selectedMuscleGroup = mg
+                    NavigationLink {
+                        // TODO: Navigate to another window showcasing the exercise list of the selected muscleGroup
+                        ExerciseListView(musclegroupVM: muscleGroupVM, exerciseVM: exerciseVM, selectedMuscleGroup: mg)
+                    } label: {
+                        Text(mg.name)
                     }
                 }
                 .listStyle(.plain)
 
                 // Exercise list of the selected mucle group
                 if let mg = muscleGroupVM.selectedMuscleGroup {
-                    Text("Exercises in \(mg.name)")
+                    Text("\(mg.name) exercises ")
                         .font(.headline)
                         .padding(.top)
                     // If the selected MuscleGroup has not exercises Yet
                     if mg.exercises.isEmpty {
                         NavigationLink {
-                            AddExerciseView(muscleGroup: mg)
+//                            AddExerciseView(muscleGroup: mg)
                         } label: {
                             Label("Add exercise", systemImage: "plus.circle")
                         }
@@ -85,30 +87,6 @@ struct MuscleGroupPickerView: View {
 
 
 
-// MARK: - Crear Exercise
-struct AddExerciseView: View {
-    var muscleGroup: MuscleGroup
-    @State private var name: String = ""
 
-    @Environment(\.modelContext) private var context
 
-    var body: some View {
-        NavigationStack {
-            Form {
-                TextField("Exercise Name", text: $name)
-                Button("Save") {
-                    let exercise = Exercise(name: name)
-                    exercise.muscleGroup = muscleGroup
-                    context.insert(exercise)
-                }
-            }
-            .navigationTitle("New Exercise")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    
-                }
-            }
-        }
-    }
-}
 

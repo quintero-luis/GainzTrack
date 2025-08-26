@@ -37,6 +37,7 @@ struct AddMuscleGroupView: View {
                         }
                     }
                     .disabled(exerciseName.isEmpty || selectedMuscleGroup == nil) // Disable button save while condition is not met
+                    // TODO: Alert showing exercise succesfully created
                 } // 1 Add Exercise Section
                 Section("Select Muscle Group") {
                     HStack {
@@ -75,13 +76,13 @@ struct AddMuscleGroupView: View {
                                     
                                 }
                             }
-                            .disabled(newMuscleGroupName.isEmpty)
+                            .disabled(newMuscleGroupName.isEmpty) // If field is empty, Add button is disabled
                             
                             Button("Cancel", role: .cancel) {
-                                newMuscleGroupName = ""
+                                newMuscleGroupName = "" // Resets field to empty
                             }
-                            
                         })
+                        // TODO: Alert showing muscle group succesfully created
                     } // HStack
                 } // 2 Muscle Group Section and addition
             } // Form

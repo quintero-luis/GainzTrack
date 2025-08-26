@@ -25,6 +25,9 @@ struct TodayView: View {
                     Text("Today")
                         .font(.largeTitle)
                         .bold()
+                        .padding(.leading)
+                    
+                    Spacer()
                     
                     NavigationLink { // Go to Muscle Group List View
                         MuscleGroupPickerView(
@@ -64,9 +67,12 @@ struct TodayView: View {
                         }
                     }
                 } else {
-                    Text("No day created for today")
+                    Spacer()
+                    Text("No exercises added today")
                         .foregroundColor(.gray)
+                        .padding(.bottom)
                 }
+                Spacer()
             }
             .padding()
             .task {
