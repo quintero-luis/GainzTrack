@@ -38,7 +38,7 @@ struct ExerciseListView: View {
                 
                 // Button to add exercise to the selected muscle group
                 NavigationLink {
-                    AddExerciseView(muscleGroupVM: musclegroupVM, exerciseVM: exerciseVM, selectedMuscleGroup: selectedMuscleGroup)
+//                    AddExerciseView(muscleGroupVM: musclegroupVM, exerciseVM: exerciseVM, selectedMuscleGroup: selectedMuscleGroup)
                 } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 32))

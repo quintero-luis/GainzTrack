@@ -29,7 +29,7 @@ final class MuscleGroupViewModel: ObservableObject {
         status = .loading
         do {
             muscleGroups = try await muscleGroupUseCases.fetchAllMuscleGroups()
-            selectedMuscleGroup = muscleGroups.first
+            selectedMuscleGroup = muscleGroup
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)

@@ -21,7 +21,11 @@ struct MuscleGroupPickerView: View {
                 List(muscleGroupVM.muscleGroups, id: \.id) { mg in
                     NavigationLink {
                         // TODO: Navigate to another window showcasing the exercise list of the selected muscleGroup
-                        ExerciseListView(musclegroupVM: muscleGroupVM, exerciseVM: exerciseVM, selectedMuscleGroup: mg)
+                        ExerciseListView(
+                            musclegroupVM: muscleGroupVM,
+                            exerciseVM: exerciseVM,
+                            selectedMuscleGroup: mg // pass selectedMuscleGroup to see its exercises list
+                        )
                     } label: {
                         Text(mg.name)
                     }
