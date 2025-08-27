@@ -37,7 +37,7 @@ final class ExerciseViewModel: ObservableObject {
         status = .loading
         do {
             exercises = try await exerciseUseCases.fetchAllExercises(for: muscleGroup)
-            selectedExercise = exercises.first
+            selectedExercise = exercise
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)

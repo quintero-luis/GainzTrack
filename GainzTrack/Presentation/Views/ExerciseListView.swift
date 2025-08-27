@@ -26,7 +26,7 @@ struct ExerciseListView: View {
             } else {
                 List(selectedMuscleGroup.exercises, id: \.id) { exercise in
                     NavigationLink {
-                            // Todo navigation to ExerciseSet for selected Exercise
+                        // Todo navigation to ExerciseSet for selected Exercise
                     } label: {
                         Text(exercise.name)
                     }
@@ -38,7 +38,11 @@ struct ExerciseListView: View {
                 
                 // Button to add exercise to the selected muscle group
                 NavigationLink {
-//                    AddExerciseView(muscleGroupVM: musclegroupVM, exerciseVM: exerciseVM, selectedMuscleGroup: selectedMuscleGroup)
+                    AddExerciseView(
+                        muscleGroupVM: musclegroupVM,
+                        exerciseVM: exerciseVM,
+                        selectedMuscleGroup: selectedMuscleGroup
+                    )
                 } label: {
                     Image(systemName: "plus")
                         .font(.system(size: 32))
@@ -51,6 +55,9 @@ struct ExerciseListView: View {
                 .padding()
             }
         } // Navigation Stack
+        .task {
+            await exerciseVM.fetchAllExercises()
+        }
     }
 }
 
