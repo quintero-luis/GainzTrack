@@ -10,6 +10,7 @@ import SwiftUI
 struct ExerciseListView: View {
     @ObservedObject var musclegroupVM: MuscleGroupViewModel
     @ObservedObject var exerciseVM: ExerciseViewModel
+    @ObservedObject var entryVM: ExerciseEntryViewModel // To add Exercise as ExerciseEntry to Today
     
     var selectedMuscleGroup: MuscleGroup // Muscle Group passed from MuscleGroupPickerView
     
@@ -29,16 +30,36 @@ struct ExerciseListView: View {
                             .foregroundColor(.gray)
                     } else {
                         List(selectedMuscleGroup.exercises, id: \.id) { exercise in
-                            NavigationLink {
-                                // Todo navigation to ExerciseSet for selected Exercise
-                            } label: {
-                                Text(exercise.name)
-                            }
+//                            NavigationLink {
+//                                // Todo navigation to ExerciseSet for selected Exercise
+//                            } label: {
+//                                Text(exercise.name)
+//                            }
+                            Button(exercise.name) { selectedExercise = exercise }
+                            .foregroundColor(selectedExercise?.id == exercise.id ? .blue : .primary) // Makes textColor blue to selected exercise cell
                         }
                     } // else
-                }
+                    
+                    if let exercise = selectedExercise {
+                        Button("Add \(exercise.name) to Today ") {
+                            Task {
+                                guard let day = entryVM.dayVM.selectedDay else {
+                                    return // TODO: Handle error
+                                }
+                                //TODO: Make bidirectional like in AddExerciseView
+                                let entry = ExerciseEntry(day: day, exercise: exercise)
+                                exercise.entries.append(entry)
+                                await entryVM.addEntry(entry)
+                            }
+                        }
+                    }
+                    
+                } // VStack
                 
-                VStack { // VStack Floating Button
+                
+                
+                // MARK: VStack Floating Button
+                VStack {
                     Spacer()
                     HStack {
                         Spacer()

@@ -23,7 +23,7 @@ struct MuscleGroupPickerView: View {
                         // TODO: Navigate to another window showcasing the exercise list of the selected muscleGroup
                         ExerciseListView(
                             musclegroupVM: muscleGroupVM,
-                            exerciseVM: exerciseVM,
+                            exerciseVM: exerciseVM, entryVM: entryVM,
                             selectedMuscleGroup: mg // pass selectedMuscleGroup to see its exercises list
                         )
                     } label: {
@@ -62,8 +62,8 @@ struct MuscleGroupPickerView: View {
                             await entryVM.addEntry(entry)
                         }
                     }
-                    .padding()
-                    .buttonStyle(.borderedProminent)
+                    .padding(.bottom, 44)
+                    .buttonStyle(.plain)
                 }
             } // VStack
             .navigationTitle("Select Muscle Group")
