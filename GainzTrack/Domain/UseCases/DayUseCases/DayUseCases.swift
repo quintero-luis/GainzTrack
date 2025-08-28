@@ -13,6 +13,7 @@ protocol DayUseCasesProtocol {
     func createDay(_ day: Day) async throws
     func updateDay(_ day: Day) async throws
     func deleteDay(_ day: Day) async throws
+    func getOrCreateToday() async throws -> Day
 }
 
 final class DayUseCases: DayUseCasesProtocol {
@@ -40,6 +41,10 @@ final class DayUseCases: DayUseCasesProtocol {
 
     func deleteDay(_ day: Day) async throws {
         try await repository.deleteDay(day)
+    }
+    
+    func getOrCreateToday() async throws -> Day {
+        try await repository.getOrCreateToday()
     }
 }
 

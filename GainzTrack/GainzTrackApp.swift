@@ -51,25 +51,29 @@ struct GainzTrackApp: App {
             let muscleGroupRepo = MuscleGroupRepository(context: container.mainContext)
             let entryRepo = ExerciseEntryRepository(context: container.mainContext)
             let exerciseRepo = ExerciseRepository(context: container.mainContext)
+            let exerciseSetRepo = ExerciseSetRepository(context: container.mainContext)
 
             // MARK: - UseCases
             let dayUseCases = DayUseCases(repository: dayRepository)
             let muscleGroupUseCases = MuscleGroupUseCases(repository: muscleGroupRepo)
             let entryUseCases = ExerciseEntryUseCases(repository: entryRepo)
             let exerciseUseCases = ExerciseUseCases(repository: exerciseRepo)
+            let exerciseSetUseCases = ExerciseSetUseCases(repository: exerciseSetRepo)
 
             // MARK: - ViewModels
             let dayVM = DayViewModel(dayUseCases: dayUseCases)
             let muscleGroupVM = MuscleGroupViewModel(muscleGroupUseCases: muscleGroupUseCases)
             let entryVM = ExerciseEntryViewModel(dayVM: dayVM, entryUseCases: entryUseCases)
             let exerciseVM = ExerciseViewModel(muscleGroupVM: muscleGroupVM, exerciseUseCases: exerciseUseCases)
+            let setVM = ExerciseSetViewModel(entryMV: entryVM, setUseCases: exerciseSetUseCases)
 
             // MARK: - Root View
             TodayView(
                 dayVM: dayVM,
-                entryVM: entryVM,
                 muscleGroupVM: muscleGroupVM,
-                exerciseVM: exerciseVM
+                exerciseVM: exerciseVM,
+                entryVM: entryVM,
+                setVM: setVM
             )
             .modelContainer(container)
         }

@@ -11,6 +11,10 @@ struct ExerciseListView: View {
     @ObservedObject var musclegroupVM: MuscleGroupViewModel
     @ObservedObject var exerciseVM: ExerciseViewModel
     @ObservedObject var entryVM: ExerciseEntryViewModel // To add Exercise as ExerciseEntry to Today
+    @ObservedObject var setVM: ExerciseSetViewModel
+    
+    //Pass the day from TodayView
+    let today: Day
     
     var selectedMuscleGroup: MuscleGroup // Muscle Group passed from MuscleGroupPickerView
     
@@ -29,31 +33,21 @@ struct ExerciseListView: View {
                         Text("This muscleGroup has no exercises yet")
                             .foregroundColor(.gray)
                     } else {
+                        // MARK: Exercises List
                         List(selectedMuscleGroup.exercises, id: \.id) { exercise in
-//                            NavigationLink {
-//                                // Todo navigation to ExerciseSet for selected Exercise
-//                            } label: {
-//                                Text(exercise.name)
-//                            }
-                            Button(exercise.name) { selectedExercise = exercise }
-                            .foregroundColor(selectedExercise?.id == exercise.id ? .blue : .primary) // Makes textColor blue to selected exercise cell
-                        }
-                    } // else
-                    
-                    if let exercise = selectedExercise {
-                        Button("Add \(exercise.name) to Today ") {
-                            Task {
-                                guard let day = entryVM.dayVM.selectedDay else {
-                                    return // TODO: Handle error
-                                }
-                                //TODO: Make bidirectional like in AddExerciseView
-                                let entry = ExerciseEntry(day: day, exercise: exercise)
-                                exercise.entries.append(entry)
-                                await entryVM.addEntry(entry)
+                            NavigationLink {
+                                // Todo navigation to ExerciseSet for selected Exercise
+                                
+                                    let entry = ExerciseEntry(day: today, exercise: exercise)
+                                    EditSetsView(entry: entry, setVM: setVM)
+                                    
+                                
+                            } label: {
+                                Text(exercise.name)
                             }
                         }
-                    }
-                    
+                        
+                    } // else
                 } // VStack
                 
                 

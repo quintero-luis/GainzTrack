@@ -21,8 +21,20 @@ final class DayViewModel: ObservableObject {
     init(dayUseCases: DayUseCasesProtocol) {
         self.dayUseCases = dayUseCases
     }
-    
+
     // MARK: Methods
+    func loadToday() async {
+        status = .loading
+        do {
+            let today = try await dayUseCases.getOrCreateToday()
+            selectedDay = today
+            await fetchAllDays()
+            status = .loaded
+        } catch {
+            status = .error(error: error.localizedDescription)
+        }
+    }
+    
     func fetchAllDays() async {
         status = .loading
         do {

@@ -11,6 +11,9 @@ struct MuscleGroupPickerView: View {
     @ObservedObject var muscleGroupVM: MuscleGroupViewModel
     @ObservedObject var exerciseVM: ExerciseViewModel
     @ObservedObject var entryVM: ExerciseEntryViewModel
+    @ObservedObject var setVM: ExerciseSetViewModel
+    
+    let today: Day
 
     @State private var selectedExercise: Exercise?
 
@@ -23,7 +26,8 @@ struct MuscleGroupPickerView: View {
                         // TODO: Navigate to another window showcasing the exercise list of the selected muscleGroup
                         ExerciseListView(
                             musclegroupVM: muscleGroupVM,
-                            exerciseVM: exerciseVM, entryVM: entryVM,
+                            exerciseVM: exerciseVM, entryVM: entryVM, setVM: setVM,
+                            today: today,
                             selectedMuscleGroup: mg // pass selectedMuscleGroup to see its exercises list
                         )
                     } label: {
@@ -54,17 +58,13 @@ struct MuscleGroupPickerView: View {
                 }
 
                 // Button to add an ExerciseEntry to the current day
-                if let exercise = selectedExercise {
-                    Button("Add \(exercise.name) to Today") {
-                        Task {
-                            guard let day = entryVM.dayVM.selectedDay else { return }
-                            let entry = ExerciseEntry(day: day, exercise: exercise)
-                            await entryVM.addEntry(entry)
-                        }
-                    }
-                    .padding(.bottom, 44)
-                    .buttonStyle(.plain)
-                }
+//                if let exercise = selectedExercise {
+//                    Button("Add \(exercise.name) to Today") {
+//                        
+//                    }
+//                    .padding(.bottom, 44)
+//                    .buttonStyle(.plain)
+//                }
             } // VStack
             .navigationTitle("Select Muscle Group")
             .toolbar {
