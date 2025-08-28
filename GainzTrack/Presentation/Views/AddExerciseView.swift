@@ -8,15 +8,14 @@
 import SwiftUI
 // MARK: - Create Exercise
 struct AddExerciseView: View {
+    @Environment(\.dismiss) private var dismiss // To go back to the last view after saving
     @ObservedObject var muscleGroupVM: MuscleGroupViewModel
     @ObservedObject var exerciseVM: ExerciseViewModel
     
-    var selectedMuscleGroup: MuscleGroup
+    var selectedMuscleGroup: MuscleGroup?
     
     @State private var exerciseName: String = ""
-    // Alert after creating an Exerciseç
-    @State private var showAlert = false
-    @State private var alertMessage = ""
+    // Alert after creating an Exercise
     
 
     var body: some View {
@@ -24,28 +23,26 @@ struct AddExerciseView: View {
             Form {
                 TextField("Exercise Name", text: $exerciseName)
                 Button("Save") {
-                    guard !exerciseName.isEmpty else {
+                    guard !exerciseName.isEmpty, let mg = selectedMuscleGroup else {
                         exerciseVM.status = .error(error: "Error adding exercise")
                         return
                     }
                     
                     Task {
                         let exerciseToAdd = Exercise(name: exerciseName)
-                        exerciseToAdd.muscleGroup = selectedMuscleGroup
+                        exerciseToAdd.muscleGroup = mg
+                        mg.exercises.append(exerciseToAdd)
                         await exerciseVM.addExercise(exerciseToAdd)
                         exerciseName = "" // Empty exercise name field after adding one
+                        dismiss()
                     }
-                    showAlert = true
                 }
                 .disabled(exerciseName.isEmpty)
-//                .alert(isPresented: $showAlert) {
-//                    Alert(title: Text("Si"))
-//                }
-                
                 Button("Cancel", role: .cancel) {
                     exerciseName = "" // Resets field to empty
                 }
                 // TODO: Alert showing exercise succesfully created
+                
             }
             .navigationTitle("New Exercise")
             .toolbar {
