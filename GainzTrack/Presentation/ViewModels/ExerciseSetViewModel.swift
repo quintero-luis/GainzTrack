@@ -36,7 +36,8 @@ final class ExerciseSetViewModel: ObservableObject {
         status = .loading
         do {
             sets = try await setUseCases.fetchAllSets(for: entry)
-            selectedSet = sets.first
+            // selectedSet = sets.first changed to selectedSet = set
+            selectedSet = set
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)

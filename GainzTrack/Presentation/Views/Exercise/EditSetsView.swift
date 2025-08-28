@@ -13,18 +13,19 @@ struct EditSetsView: View {
 
     @State private var weight: Double = 0
     @State private var reps: Int = 0
+    @State private var weightUnit = ""
 
     var body: some View {
         NavigationView {
             VStack {
-                Text("Edit Sets for \(String(describing: entry.exercise?.name))")
+                Text("Edit Sets for \(entry.exercise?.name ?? "Exercise")")
                     .font(.headline)
 
                 // List current sets
                 List(entry.sets, id: \.id) { set in
                     HStack {
                         //\(entry.exercise.weightUnit.rawValue)
-                        Text("Weight: \(set.weight, specifier: "%.1f") ")
+                        Text("Weight: \(set.weight, specifier: "%.2f") ")
                         Spacer()
                         Text("Reps: \(set.reps)")
                     }
@@ -49,6 +50,12 @@ struct EditSetsView: View {
                             .frame(width: 70)
                             .textFieldStyle(.roundedBorder)
                     }
+                    HStack {
+                        Text("Weight Unit")
+                        TextField("Weight Unit", text: $weightUnit)
+                            .frame(width: 70)
+                            .textFieldStyle(.roundedBorder)
+                    }
                     Button("Add Set") {
                         let newSet = ExerciseSet(
                             weight: weight,
@@ -57,7 +64,10 @@ struct EditSetsView: View {
                         )
                         Task {
                             await setVM.addSet(newSet)
+                            await setVM.fetchAllSets()
                             // Optionally, update entry.sets locally if needed
+                            entry.sets.append(newSet)
+                            
                         }
                         weight = 0
                         reps = 0
@@ -81,7 +91,7 @@ struct EditSetsView: View {
             }
         } // NavigationView
         .onAppear {
-            print("🚀 Navegaste a EditSetsView para el ejercicio: \(entry.exercise?.name ?? "sin nombre")")
+            print("Navegaste a EditSetsView para el ejercicio: \(entry.exercise?.name ?? "sin nombre")")
         }
     }
 }

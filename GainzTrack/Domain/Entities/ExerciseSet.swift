@@ -14,6 +14,7 @@ final class ExerciseSet: Sendable {
     @Attribute(.unique) var id: UUID = UUID()
     var weight: Double
     var reps: Int
+    var weightUnit: String = ""
     
     // Every ExerciseSet belongs to an ExerciseEntry
     @Relationship(deleteRule: .nullify, inverse: \ExerciseEntry.sets)
