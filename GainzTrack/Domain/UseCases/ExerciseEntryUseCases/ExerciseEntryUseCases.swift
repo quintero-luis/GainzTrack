@@ -43,3 +43,31 @@ final class ExerciseEntryUseCases: ExerciseEntryUseCasesProtocol {
         try await repository.deleteEntry(entry)
     }
 }
+
+final class ExerciseEntryUseCasesMock: ExerciseEntryUseCasesProtocol {
+    private var repository: MockExerciseEntryRepository
+    
+    init(repository: MockExerciseEntryRepository = MockExerciseEntryRepository()) {
+        self.repository = repository
+    }
+    
+    func fetchAllEntries(for day: Day) async throws -> [ExerciseEntry] {
+        try await repository.getAllEntries(for: day)
+    }
+    
+    func fetchEntry(by id: UUID) async throws -> ExerciseEntry? {
+        try await repository.getEntry(by: id)
+    }
+    
+    func createEntry(_ entry: ExerciseEntry, to day: Day) async throws {
+        try await repository.addEntry(entry, to: day)
+    }
+    
+    func updateEntry(_ entry: ExerciseEntry) async throws {
+        try await repository.updateEntry(entry)
+    }
+    
+    func deleteEntry(_ entry: ExerciseEntry) async throws {
+        try await repository.deleteEntry(entry)
+    }
+}

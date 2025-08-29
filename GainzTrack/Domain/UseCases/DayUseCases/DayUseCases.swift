@@ -48,4 +48,36 @@ final class DayUseCases: DayUseCasesProtocol {
     }
 }
 
+final class DayUseCasesMock: DayUseCasesProtocol {
+    private let repository: MockDayRepository
+    
+    init(repository: MockDayRepository = MockDayRepository()) {
+        self.repository = repository
+    }
+    
+    func fetchAllDays() async throws -> [Day] {
+        try await repository.getAllDays()
+    }
+    
+    func fetchDay(by date: Date) async throws -> Day? {
+        try await repository.getDay(by: date)
+    }
+    
+    func createDay(_ day: Day) async throws {
+        try await repository.addDay(day)
+    }
+    
+    func updateDay(_ day: Day) async throws {
+        try await repository.updateDay(day)
+    }
+    
+    func deleteDay(_ day: Day) async throws {
+        try await repository.deleteDay(day)
+    }
+    
+    func getOrCreateToday() async throws -> Day {
+        try await repository.getOrCreateToday()
+    }  
+}
+
 

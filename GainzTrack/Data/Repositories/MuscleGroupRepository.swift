@@ -44,3 +44,40 @@ final class MuscleGroupRepository: MuscleGroupRepositoryProtocol {
         try context.save()
     }
 }
+
+final class MockMuscleGroupRepository: MuscleGroupRepositoryProtocol {
+    
+    private var muscleGroups: [MuscleGroup] = []
+    
+    init() {
+        let muscle1 = MuscleGroup(name: "Chest")
+        let muscle2 = MuscleGroup(name: "Legs")
+        let muscle3 = MuscleGroup(name: "Back")
+        
+        muscleGroups = [muscle1, muscle2, muscle3]
+    }
+    
+    func getAllMuscleGroups() async throws -> [MuscleGroup] {
+        muscleGroups
+    }
+    
+    func getMuscleGroup(by id: UUID) async throws -> MuscleGroup? {
+        muscleGroups.first { $0.id == id }
+    }
+    
+    func addMuscleGroup(_ muscleGroup: MuscleGroup) async throws {
+        muscleGroups.append(muscleGroup)
+    }
+    
+    func updateMuscleGroup(_ muscleGroup: MuscleGroup) async throws {
+        if let index = muscleGroups.firstIndex(where: { $0.id == muscleGroup.id }) {
+            muscleGroups[index] = muscleGroup
+        }
+    }
+    
+    func deleteMuscleGroup(_ muscleGroup: MuscleGroup) async throws {
+        muscleGroups.removeAll { $0.id == muscleGroup.id }
+    }
+}
+
+

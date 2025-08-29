@@ -42,3 +42,35 @@ final class ExerciseUseCases: ExerciseUseCasesProtocol {
         try await repository.deleteExercise(exercise)
     }
 }
+
+final class ExerciseUseCaseMock: ExerciseUseCasesProtocol {
+    
+    // Mock storage para simular ejercicios
+    private var exercises: [Exercise] = [
+        Exercise(name: "Bench Press"),
+        Exercise(name: "Pull Up"),
+        Exercise(name: "Squat")
+    ]
+    
+    func fetchAllExercises(for muscleGroup: MuscleGroup) async throws -> [Exercise] {
+        exercises
+    }
+    
+    func createExercise(_ exercise: Exercise, to muscleGroup: MuscleGroup) async throws {
+        exercises.append(exercise)
+    }
+    
+    func fetchExercise(by id: UUID) async throws -> Exercise? {
+        exercises.first { $0.id == id }
+    }
+    
+    func updateExercise(_ exercise: Exercise) async throws {
+        if let index = exercises.firstIndex(where: { $0.id == exercise.id }) {
+            exercises[index] = exercise
+        }
+    }
+    
+    func deleteExercise(_ exercise: Exercise) async throws {
+        exercises.removeAll { $0.id == exercise.id }
+    }
+}

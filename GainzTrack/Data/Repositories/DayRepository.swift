@@ -57,3 +57,93 @@ final class DayRepository: DayRepositoryProtocol {
         }
 }
 
+final class MockDayRepository: DayRepositoryProtocol {
+    private var days: [Day] = []
+
+    init() {
+        // Crear días de prueba: hace 2 días, ayer y hoy
+        let calendar = Calendar.current
+        days = [
+            Day(date: calendar.date(byAdding: .day, value: -2, to: Date())!),
+            Day(date: calendar.date(byAdding: .day, value: -1, to: Date())!),
+            Day(date: calendar.date(byAdding: .day, value: 1, to: Date())!),
+            Day(date: calendar.startOfDay(for: Date()))
+        ]
+    }
+    
+    func getAllDays() async throws -> [Day] {
+        days
+    }
+    
+//    func getDay(by date: Date) async throws -> Day? {
+//        days.first { Calendar.current.isDate($0.date, equalTo: date, toGranularity: .day) }
+//    }
+    func getDay(by date: Date) async throws -> Day? {
+        let calendar = Calendar.current
+        return days.first { calendar.isDate($0.date, equalTo: date, toGranularity: .day) }
+    }
+    
+    func addDay(_ day: Day) async throws {
+        days.append(day)
+    }
+    
+    func updateDay(_ day: Day) async throws {
+        if let index = days.firstIndex(where: { $0.id == day.id }) {
+            days[index] = day
+        }
+    }
+    
+    func deleteDay(_ day: Day) async throws {
+        days.removeAll { $0.id == day.id }
+    }
+    
+    func getOrCreateToday() async throws -> Day {
+        let todayDate = Calendar.current.startOfDay(for: Date())
+        if let today = try await getDay(by: todayDate) {
+            return today
+        } else {
+            let newDay = Day(date: todayDate)
+            try await addDay(newDay)
+            return newDay
+        }
+    }
+}
+
+//final class MockDayRepository: DayRepositoryProtocol {
+//    private var days: [Day] = []
+//    
+//    
+//    func getAllDays() async throws -> [Day] {
+//        days
+//    }
+//    
+//    func getDay(by date: Date) async throws -> Day? {
+//        days.first { Calendar.current.isDate($0.date, equalTo: date, toGranularity: .day)}
+//    }
+//    
+//    func addDay(_ day: Day) async throws {
+//        days.append(day)
+//    }
+//    
+//    func updateDay(_ day: Day) async throws {
+//        if let index = days.firstIndex(where: { $0.id == day.id }) {
+//            days[index] = day
+//        }
+//    }
+//    
+//    func deleteDay(_ day: Day) async throws {
+//        days.removeAll { $0.id == day.id }
+//    }
+//    
+//    func getOrCreateToday() async throws -> Day {
+//        //Today date and reuse getDay(by:)
+//        let todayDate = Calendar.current.startOfDay(for: Date())
+//        if let today = try await getDay(by: todayDate) {
+//            return today
+//        } else {
+//            let newDay = Day(date: todayDate)
+//            try await addDay(newDay)
+//            return newDay
+//        }
+//    }
+//}

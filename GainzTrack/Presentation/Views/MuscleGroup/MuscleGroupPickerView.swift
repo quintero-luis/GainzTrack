@@ -89,6 +89,40 @@ struct MuscleGroupPickerView: View {
 } // Muscle Group Picker
 
 
+#Preview {
+    let dayVM = DayViewModel(dayUseCases: DayUseCasesMock())
+    
+    let muscleGroupVM = MuscleGroupViewModel(
+        muscleGroupUseCases: MuscleGroupUseCaseMock()
+    )
+    
+    let exerciseVM = ExerciseViewModel(
+        muscleGroupVM: muscleGroupVM,
+        exerciseUseCases: ExerciseUseCaseMock()
+    )
+    
+    let entryVM = ExerciseEntryViewModel(
+        dayVM: dayVM,
+        entryUseCases: ExerciseEntryUseCasesMock()
+    )
+    
+    let setVM = ExerciseSetViewModel(
+        entryMV: entryVM,
+        setUseCases: ExerciseSetUseCasesMock())
+
+    let mockToday = Day(date: Date()) // Día de prueba
+
+    MuscleGroupPickerView(
+        muscleGroupVM: muscleGroupVM,
+        exerciseVM: exerciseVM,
+        entryVM: entryVM,
+        setVM: setVM,
+        today: mockToday
+    )
+}
+// Preview
+
+
 
 
 
