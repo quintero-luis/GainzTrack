@@ -68,6 +68,7 @@ struct EditSetsView: View {
                             // Optionally, update entry.sets locally if needed
                             entry.sets.append(newSet)
                             
+                            
                         }
                         weight = 0
                         reps = 0

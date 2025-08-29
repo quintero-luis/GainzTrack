@@ -12,6 +12,7 @@ final class DayViewModel: ObservableObject {
     // MARK: Published properties
     @Published var days: [Day] = []
     @Published var selectedDay: Day? // Important for horizontal navigation between days
+    @Published var day: Day?
     @Published var status: Status = .none
     
     // MARK: UseCases for DayVM
@@ -38,9 +39,8 @@ final class DayViewModel: ObservableObject {
     func fetchAllDays() async {
         status = .loading
         do {
-            let result = try await dayUseCases.fetchAllDays()
-            days = result
-            selectedDay = result.first
+            days = try await dayUseCases.fetchAllDays()
+            
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)
@@ -50,7 +50,8 @@ final class DayViewModel: ObservableObject {
     func fetchDay(by date: Date) async {
         status = .loading
         do {
-            selectedDay = try await dayUseCases.fetchDay(by: date)
+            day = try await dayUseCases.fetchDay(by: date)
+            selectedDay = day
             status = .loaded
         } catch {
             status = .error(error: error.localizedDescription)

@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct AddMuscleGroupView: View {
+    @Environment(\.dismiss) private var dismiss // To go back to the last view after saving
+    
     @ObservedObject var muscleGroupVM: MuscleGroupViewModel
     @ObservedObject var exerciseVM: ExerciseViewModel
     
@@ -29,11 +31,13 @@ struct AddMuscleGroupView: View {
                             return
                         }
                         Task {
-                            let exercise = Exercise(name: exerciseName)
-                            exercise.muscleGroup = mg
-                            await exerciseVM.addExercise(exercise)
+                            let exerciseToAdd = Exercise(name: exerciseName)
+                            exerciseToAdd.muscleGroup = mg
+                            mg.exercises.append(exerciseToAdd)
+                            await exerciseVM.addExercise(exerciseToAdd)
                             exerciseName = "" // Reset Fields afer saving
                             selectedMuscleGroup = nil // Reset Fields afer saving
+                            dismiss()
                         }
                     }
                     .disabled(exerciseName.isEmpty || selectedMuscleGroup == nil) // Disable button save while condition is not met
